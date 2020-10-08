@@ -22,6 +22,9 @@ const app = express();
 //My logging middleware
 app.use(logger);
 
+//Body Parser
+app.use(express.json())
+
 //Dev logging middleware
 if(process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
