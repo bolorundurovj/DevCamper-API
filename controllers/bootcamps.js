@@ -1,5 +1,6 @@
 const Bootcamp = require('../models/Bootcamp');
 const colors = require('colors');
+const ErrorResponse = require('../utils/errorResponse');
 
 // @desc    Get all bootcamps
 // @route   GET /api/v1/bootcamps
@@ -23,15 +24,12 @@ exports.getBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findById(req.params.id);
     if (!bootcamp) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'No bootcamp with that ID!' });
+      return next(new ErrorResponse(`Bootcamp not found with ID of ${req.params.id}`, 404));
     }
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (err) {
-    next(err);
-    // res.status(400).json({ success: false, error: err });
+    next(new ErrorResponse(`Bootcamp not found with ID of ${req.params.id}`, 404));
   }
 };
 
