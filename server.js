@@ -16,6 +16,7 @@ const bootcamps = require('./routes/bootcamps');
 
 //Middleware Imports
 const logger = require('./middleware/logger');
+const errorHandler = require('./middleware/error');
 
 const app = express();
 
@@ -32,6 +33,8 @@ if(process.env.NODE_ENV === 'development') {
 
 //Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
