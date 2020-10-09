@@ -24,12 +24,12 @@ exports.getBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findById(req.params.id);
     if (!bootcamp) {
-      return next(new ErrorResponse(`Bootcamp not found with ID of ${req.params.id}`, 404));
+      return next(new ErrorResponse(`Resource not found with ID of ${req.params.id}`, 404));
     }
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (err) {
-    next(new ErrorResponse(`Bootcamp not found with ID of ${req.params.id}`, 404));
+    next(err);
   }
 };
 
@@ -56,15 +56,12 @@ exports.updateBootcamp = async (req, res, next) => {
     });
 
     if (!bootcamp) {
-      return res.status(400).json({
-        success: false,
-        error: 'Unable to update bootcamp with that ID!',
-      });
+      return next(new ErrorResponse(`Unable to update resource ID of ${req.params.id}`, 400));
     }
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (err) {
-    res.status(400).json({ success: false, error: err });
+    next(err)
   }
 };
 
@@ -75,13 +72,11 @@ exports.deleteBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
     if (!bootcamp) {
-      return res.status(400).json({
-        success: false,
-        error: 'Unable to delete bootcamp with that ID!',
-      });
+      
+      return next(new ErrorResponse(`Unable to delete resource ID of ${req.params.id}`, 400));
     }
     res.status(200).json({ success: true, data: bootcamp });
   } catch (err) {
-    res.status(400).json({ success: false, error: err });
+    next(err)
   }
 };
