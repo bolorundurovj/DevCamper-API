@@ -8,11 +8,28 @@ const geocode = require('../utils/geocoder');
 // @route   GET /api/v1/bootcamps
 // @access  Public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
+  //Copy req query
+  const reqQuery = {...req.query};
+
+  //Fields to exclude
+  const removeFields = ['select'];
+
+  //Loop over removeFields and remove them from reqQuery
+  removeFields.forEach(param => delete reqQuery[param])
+
+  //Create query string
   let query;
   let queryStr = JSON.stringify(req.query);
+
+  //Create operators ($gt, $gte, etc)
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+
+  //Finding resource
   query = Bootcamp.find(JSON.parse(queryStr));
 
+  //Select Fields
+
+  //Executing query
   const bootcamps = await query;
 
   res
