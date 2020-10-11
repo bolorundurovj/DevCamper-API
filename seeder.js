@@ -29,7 +29,7 @@ const importData = async () => {
     console.log('😊 Data imported ...'.green.inverse);
     process.exit();
   } catch (err) {
-    console.log('😒 There was an error'.red.inverse);
+    console.log('😒 There was an error'.red);
     console.error(err);
   }
 };
@@ -38,10 +38,10 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Bootcamp.deleteMany();
-    console.log('😊 Data destroyed ...'.magenta.inverse);
+    console.log('😊 Data destroyed ...'.red.inverse);
     process.exit();
   } catch (err) {
-    console.log('😒 There was an error'.red.inverse);
+    console.log('😒 There was an error'.red);
     console.error(err);
   }
 };
