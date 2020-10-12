@@ -28,7 +28,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   //Finding resource
-  query = Bootcamp.find(JSON.parse(queryStr));
+  query = Bootcamp.find(JSON.parse(queryStr)).populate('courses');
 
   //Select Fields
   if (req.query.select) {
@@ -44,7 +44,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     console.log(sortBy);
     query = query.sort(sortBy);
   } else {
-    query = query.sort('-createdAt')
+    query = query.sort('-createdAt');
   }
 
   //Pagination
@@ -66,19 +66,24 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   if (endIndex < total) {
     pagination.next = {
       page: page + 1,
-      limit
-    }
+      limit,
+    };
   }
   if (startIndex > 0) {
     pagination.prev = {
       page: page - 1,
-      limit
-    }
+      limit,
+    };
   }
 
   res
     .status(200)
-    .json({ success: true, count: bootcamps.length, pagination, data: bootcamps });
+    .json({
+      success: true,
+      count: bootcamps.length,
+      pagination,
+      data: bootcamps,
+    });
 });
 
 // @desc    Get a single bootcamp
@@ -126,12 +131,13 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/bootcamps/:id
 // @access  Private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+  const bootcamp = await Bootcamp.findById(req.params.id);
   if (!bootcamp) {
     return next(
       new ErrorResponse(`Unable to delete resource ID of ${req.params.id}`, 400)
     );
   }
+  bootcamp.remove();
   res.status(200).json({ success: true, data: bootcamp });
 });
 
