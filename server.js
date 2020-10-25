@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const fileupload = require('express-fileupload');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -45,10 +45,10 @@ app.use(express.json());
 //Cookie parser
 app.use(cookieParser());
 
-//Dev logging middleware
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// //Dev logging middleware
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 
 //File Uploading
 app.use(fileupload());
