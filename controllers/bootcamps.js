@@ -51,10 +51,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/bootcamps/:id
 // @access  Private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  let bootcamp = await Bootcamp.findById(req.params.id);
 
   if (!bootcamp) {
     return next(
@@ -64,6 +61,21 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
       )
     );
   }
+
+  //Make sure user is bootcamp owner
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update this bootcamp`,
+        401
+      )
+    );
+  }
+
+  bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
   res.status(200).json({ success: true, data: bootcamp });
 });
@@ -81,6 +93,17 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
       )
     );
   }
+
+  //Make sure user is bootcamp owner
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to delete this bootcamp`,
+        401
+      )
+    );
+  }
+
   bootcamp.remove();
   res.status(200).json({ success: true, data: bootcamp });
 });
@@ -122,6 +145,17 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
       new ErrorResponse(`Bootcamp not found with ID: ${req.params.id}`, 404)
     );
   }
+
+  //Make sure user is bootcamp owner
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to upload a photo to this bootcamp`,
+        401
+      )
+    );
+  }
+
   if (!req.files) {
     return next(new ErrorResponse(`Please upload a file`, 400));
   }
@@ -149,7 +183,7 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
     if (err) {
       console.error(err);
       return next(
-        new ErrorResponse(`AN error occurred uploading the image`, 500)
+        new ErrorResponse(`An error occurred uploading the image`, 500)
       );
     }
 
