@@ -61,23 +61,38 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc      Log user out / clear cookies
+// @route     GET /api/v1/auth/logout
+// @access    Private
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
 // @desc      Update user details
 // @route     PUT /api/v1/auth/updatedetails
 // @access    Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
   const fieldsToUpdate = {
     name: req.body.name,
-    email: req.body.email
+    email: req.body.email,
   };
 
   const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   res.status(200).json({
     success: true,
-    data: user
+    data: user,
   });
 });
 
@@ -149,7 +164,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     .update(req.params.resettoken)
     .digest('hex');
 
-  const user = await User.findOne({resetPasswordToken, resetPasswordExpire: {$gt: Date.now()}});
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
 
   if (!user) {
     return next(new ErrorResponse('Invalid Token', 400));
@@ -162,7 +180,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   await user.save();
 
-  sendTokenResponse(user, 200, res)
+  sendTokenResponse(user, 200, res);
 });
 
 // Get token from model, create cookie and send response
