@@ -33,6 +33,10 @@ const errorHandler = require('./middleware/error');
 
 const app = express();
 
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+
 //Set security headers
 app.use(helmet());
 
